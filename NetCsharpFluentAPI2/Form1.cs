@@ -1,11 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic.ApplicationServices;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 namespace NetCsharpFluentAPI2
 {
+
     public partial class Form1 : Form
     {
-        public Form1()
+        public string currentUser {  get; set; }
+        public Form1(string usLog)
         {
             InitializeComponent();
 
@@ -13,7 +17,7 @@ namespace NetCsharpFluentAPI2
             comboBox1.Items.Add("Name");
             comboBox1.Items.Add("Last Name");
             comboBox1.Items.Add("Job");
-
+            currentUser = usLog;
         }
 
         private async void Form1_Load(object sender, EventArgs e)
@@ -65,14 +69,26 @@ namespace NetCsharpFluentAPI2
                             };
 
                 if (comboBox1.SelectedIndex == 0)
+                {
                     query = query.Where(em => em.Name.ToLower().Trim() == textBox1.Text.ToLower().Trim());
+                   
+                    
+                }
+                  
                 else if (comboBox1.SelectedIndex == 1)
+                {
                     query = query.Where(em => em.LastName.ToLower().Trim() == textBox1.Text.ToLower().Trim());
+                }
+                   
                 else if (comboBox1.SelectedIndex == 2)
+                {
                     query = query.Where(em => em.Job == textBox1.Text);
+                }
+                  
 
                 var result = await query.ToListAsync();
                 dataGridView1.DataSource = result;
+                WriteToJsonFile(new { CurrentUser = currentUser, Message = $"Пользователь выбрал фильтр по {comboBox1.SelectedText}!" });
 
             }
         }
@@ -101,6 +117,7 @@ namespace NetCsharpFluentAPI2
 
                     dataGridView1.DataSource = employees.ToList();
                     MessageBox.Show("Сотрудник добавлен!");
+                    WriteToJsonFile(new { CurrentUser = currentUser, Message = "Пользователь добавил сотрудника!" }); ;
                     textBox2.Text = "";
                     textBox3.Text = "";
                     textBox4.Text = "";
@@ -139,6 +156,7 @@ namespace NetCsharpFluentAPI2
 
                 dataGridView1.DataSource = employees.ToList();
                 MessageBox.Show("Сотрудник удален!");
+                WriteToJsonFile(new { CurrentUser = currentUser, Message = "Пользователь удалил сотрудника!" });
                 textBox2.Text = "";
                 textBox3.Text = "";
                 textBox4.Text = "";
@@ -193,6 +211,7 @@ namespace NetCsharpFluentAPI2
                 }
              
                 MessageBox.Show("Сотрудник изменен!");
+                WriteToJsonFile(new { CurrentUser = currentUser, Message = "Пользователь изменил сотрудника!" });
                 textBox2.Text = "";
                 textBox3.Text = "";
            
@@ -216,6 +235,15 @@ namespace NetCsharpFluentAPI2
             textBox5.Text = (string)jobName;
 
 
+        }
+        private void WriteToJsonFile(object data)
+        {
+            string filePath = "C:\\Users\\fasta\\Desktop\\PROG\\C#\\2 semestr\\HW\\NetCsharpFluentAPI2\\NetCsharpFluentAPI2\\json1.json";
+            using (StreamWriter sw = new StreamWriter(filePath, append: true))
+            {
+                string json = JsonSerializer.Serialize(data);
+                sw.WriteLine(json);
+            }
         }
     }
 }
