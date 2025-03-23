@@ -239,9 +239,15 @@ namespace NetCsharpFluentAPI2
         private void WriteToJsonFile(object data)
         {
             string filePath = "C:\\Users\\fasta\\Desktop\\PROG\\C#\\2 semestr\\HW\\NetCsharpFluentAPI2\\NetCsharpFluentAPI2\\json1.json";
+
+            var options = new JsonSerializerOptions
+            {
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                WriteIndented = true
+            };
             using (StreamWriter sw = new StreamWriter(filePath, append: true))
             {
-                string json = JsonSerializer.Serialize(data);
+                string json = JsonSerializer.Serialize(data, options);
                 sw.WriteLine(json);
             }
         }
